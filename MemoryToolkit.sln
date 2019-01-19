@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.28010.2046
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MemoryToolkit", "MemoryToolkit\MemoryToolkit.csproj", "{FFD413BD-D99A-4E6E-9A74-298C59898A00}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MemoryToolkitTester", "MemoryToolkitTester\MemoryToolkitTester.csproj", "{EE4C07CE-733E-4B17-89DF-55433F122993}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,14 @@ Global
 		{FFD413BD-D99A-4E6E-9A74-298C59898A00}.Release|x64.Build.0 = Release|x64
 		{FFD413BD-D99A-4E6E-9A74-298C59898A00}.Release|x86.ActiveCfg = Release|x86
 		{FFD413BD-D99A-4E6E-9A74-298C59898A00}.Release|x86.Build.0 = Release|x86
+		{EE4C07CE-733E-4B17-89DF-55433F122993}.Debug|x64.ActiveCfg = Debug|x64
+		{EE4C07CE-733E-4B17-89DF-55433F122993}.Debug|x64.Build.0 = Debug|x64
+		{EE4C07CE-733E-4B17-89DF-55433F122993}.Debug|x86.ActiveCfg = Debug|x86
+		{EE4C07CE-733E-4B17-89DF-55433F122993}.Debug|x86.Build.0 = Debug|x86
+		{EE4C07CE-733E-4B17-89DF-55433F122993}.Release|x64.ActiveCfg = Release|x64
+		{EE4C07CE-733E-4B17-89DF-55433F122993}.Release|x64.Build.0 = Release|x64
+		{EE4C07CE-733E-4B17-89DF-55433F122993}.Release|x86.ActiveCfg = Release|x86
+		{EE4C07CE-733E-4B17-89DF-55433F122993}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

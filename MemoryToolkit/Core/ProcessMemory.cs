@@ -13,12 +13,12 @@ namespace MemoryToolkit
         {
             Process = Process.GetProcessById(processId);
         }
+
         public ProcessMemory(Process processInstance)
         {
             Process = processInstance;
         }
         
-
         private Process process = null;
         //
         // <summary>

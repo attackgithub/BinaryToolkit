@@ -62,7 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\ProcessMemory.cs" />
-    <Compile Include="Core\ModuleWrapper.cs" />
+    <Compile Include="Core\ModuleMemory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Stuff\Exceptions.cs" />
     <Compile Include="Stuff\Extensions.cs" />

@@ -73,9 +73,9 @@ namespace MemoryToolkit
         /// <param name="Address">Address</param>
         /// <param name="stringLen">(only for string) -1 to read to \0</param>
         /// <returns></returns>
-        public T Read<T>(IntPtr Address, int stringLen = -1)
+        public T Read<T>(IntPtr Address, bool adrRelativeToTheMainModule = true, int stringLen = -1)
         {
-            return MainModule.Read<T>(Address, stringLen);
+            return MainModule.Read<T>(Address, adrRelativeToTheMainModule, stringLen);
         }
 
         public void CheckAlive()

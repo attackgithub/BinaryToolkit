@@ -74,15 +74,14 @@ namespace MemoryToolkit
 
             return null;
         }
+        
 
-        /// <summary>  
-        ///  Reads from memory
-        /// </summary>  
-        /// <paramref name="Address">Where to start read. Relative to Module Address.</paramref>
-        /// <paramref name="stringLen">Use only for strings. If -1 it will reads up to the first \0</paramref>
-        public T Read<T>(IntPtr Address, int stringLen = -1)
+        public T Read<T>(IntPtr Address, bool adrRelativeToTheMainModule = true, int stringLen = -1)
         { 
             Type type = typeof(T);
+            
+            if (!adrRelativeToTheMainModule)
+                Address = BaseAddress.Increment(Address); // add BaseAddress to the Address
 
             if (type == typeof(string))
                 return (T)(object)ReadString(Address, stringLen);
@@ -91,23 +90,44 @@ namespace MemoryToolkit
             byte[] buffer = new byte[dwSize];
             IntPtr bytesread;
 
-            Interop.kernel32.ReadProcessMemory(Process.Handle, BaseAddress.Increment(Address), buffer, dwSize, out bytesread);
 
-            if (type == typeof(int))
+            Interop.kernel32.ReadProcessMemory(Process.Handle, Address, buffer, dwSize, out bytesread);
+
+            if (type == typeof(Int32))
             {
                 return (T)(object)BitConverter.ToInt32(buffer, 0);
             }
-            else if (type == typeof(char))
+            else if (type == typeof(Char))
             {
-                return (T)(object)BitConverter.ToChar(buffer, 0);
+                return (T)(object)Convert.ToChar(buffer[0]);
+                //return (T)(object)BitConverter.ToChar(buffer, 0);
+            }
+            else if (type == typeof(byte))
+            {
+                return (T)(object)buffer[0];
             }
 
             throw new NotImplementedException($"Type '{type.Name}' is not implemented in MemoryToolkit");
         }
 
-        public string ReadString(IntPtr Address, int stringLen = -1)
+        public string ReadString(IntPtr Address, int stringLen = -1, int fixLen = -1)
         {
-            return null;
+            StringBuilder result = new StringBuilder();
+
+            int i = 0;
+            while (i != stringLen)
+            {
+                byte buffer = Read<byte>(Address, true);
+
+                if (buffer == 0)
+                    break;
+
+                result.Append(Convert.ToChar(buffer));
+
+                Address = Address.Increment(1);
+            }
+
+            return result.ToString();
         }
 
         public override string ToString()

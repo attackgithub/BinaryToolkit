@@ -110,7 +110,7 @@ namespace MemoryToolkit
             throw new NotImplementedException($"Type '{type.Name}' is not implemented in MemoryToolkit");
         }
 
-        public string ReadString(IntPtr Address, int stringLen = -1, int fixLen = -1)
+        public string ReadString(IntPtr Address, int stringLen = -1)
         {
             StringBuilder result = new StringBuilder();
 

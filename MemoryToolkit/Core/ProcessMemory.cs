@@ -25,7 +25,7 @@ namespace MemoryToolkit
             {
                 CheckAlive();
 
-                return new Module(process.MainModule);
+                return new Module(process.MainModule, process);
             }
         }
         
@@ -39,7 +39,7 @@ namespace MemoryToolkit
 
                 foreach(ProcessModule module in process.Modules)
                 {
-                    result.Add(new Module(module));
+                    result.Add(new Module(module, process));
                 }
 
                 return result.ToArray();

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
+using MemoryToolkit.Extensions;
 
 namespace MemoryToolkit
 {
@@ -46,12 +48,22 @@ namespace MemoryToolkit
                 return ProcessModule.EntryPointAddress;
             }
         }
-        
-        public System.Diagnostics.ProcessModule ProcessModule = null;
 
-        public Module(System.Diagnostics.ProcessModule o)
+        public IntPtr MainModuleAddress
+        {
+            get
+            {
+                return Process.MainModule.BaseAddress;
+            }
+        }
+
+        public System.Diagnostics.ProcessModule ProcessModule = null;
+        public System.Diagnostics.Process Process = null;
+
+        public Module(System.Diagnostics.ProcessModule o, System.Diagnostics.Process p)
         {
             ProcessModule = o;
+            Process = p;
         }
 
         // not implemented
@@ -63,21 +75,37 @@ namespace MemoryToolkit
             return null;
         }
 
-        public T Read<T>(IntPtr Address)
-        {
-            if(typeof(T) == typeof(byte))
+        /// <summary>  
+        ///  Reads from memory
+        /// </summary>  
+        /// <paramref name="Address">Where to start read. Relative to Module Address.</paramref>
+        /// <paramref name="stringLen">Use only for strings. If -1 it will reads up to the first \0</paramref>
+        public T Read<T>(IntPtr Address, int stringLen = -1)
+        { 
+            Type type = typeof(T);
+
+            if (type == typeof(string))
+                return (T)(object)ReadString(Address, stringLen);
+
+            int dwSize = Marshal.SizeOf(typeof(T));
+            byte[] buffer = new byte[dwSize];
+            IntPtr bytesread;
+
+            Interop.kernel32.ReadProcessMemory(Process.Handle, BaseAddress.Increment(Address), buffer, dwSize, out bytesread);
+
+            if (type == typeof(int))
             {
-
+                return (T)(object)BitConverter.ToInt32(buffer, 0);
             }
-            else if (typeof(T) == typeof(int))
+            else if (type == typeof(char))
             {
-
+                return (T)(object)BitConverter.ToChar(buffer, 0);
             }
 
-            throw new NotImplementedException($"Type '{typeof(T).Name}' is not implemented in MemoryToolkit");
+            throw new NotImplementedException($"Type '{type.Name}' is not implemented in MemoryToolkit");
         }
-        
-        public object Read(IntPtr Address, int size)
+
+        public string ReadString(IntPtr Address, int stringLen = -1)
         {
             return null;
         }
@@ -95,5 +123,14 @@ namespace MemoryToolkit
 
             return blr.ToString();
         }
+        
+        //public int ReadInt32(IntPtr Address, uint dwAddress)
+        //{
+        //    byte[] buffer = new byte[4];
+        //    int bytesread;
+
+        //    Interop.kernel32.ReadProcessMemory(Address, dwAddress, buffer, 4, out bytesread);
+        //    return BitConverter.ToInt32(buffer, 0);
+        //}
     }
 }

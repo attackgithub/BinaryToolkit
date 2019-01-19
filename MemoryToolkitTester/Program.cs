@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MemoryToolkit;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -10,8 +11,25 @@ namespace MemoryToolkitTester
     {
         static int Main(string[] args)
         {
-            Console.WriteLine("MemoryToolkitTester start");
-            Console.WriteLine("Process: ");
+            WriteLine("MemoryToolkitTester start");
+
+            var processes = Process.GetProcessesByName("explorer");
+            if(processes.Length == 0)
+            {
+                WriteLine("Process not found");
+                return 1;
+            }
+
+            ProcessMemory mem = new ProcessMemory(processes[0]);
+            WriteLine(mem.Process.ToString());
+
+            WriteLine("[Main Module] " + mem.MainModule.ToString());
+            foreach (var module in mem.Modules)
+            {
+                WriteLine("[Module] " + module.ToString());
+            }
+
+            mem.Dispose();
             return 0;
         }
         static void WriteLine(object text, ConsoleColor color = ConsoleColor.Black)

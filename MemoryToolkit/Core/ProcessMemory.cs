@@ -18,13 +18,36 @@ namespace MemoryToolkit
         {
             Process = processInstance;
         }
+
+        public Module MainModule
+        {
+            get
+            {
+                CheckAlive();
+
+                return new Module(process.MainModule);
+            }
+        }
+        
+        public Module[] Modules
+        {
+            get
+            {
+                CheckAlive();
+
+                List<Module> result = new List<Module>();
+
+                foreach(ProcessModule module in process.Modules)
+                {
+                    result.Add(new Module(module));
+                }
+
+                return result.ToArray();
+            }
+        }
         
         private Process process = null;
-        //
-        // <summary>
-        // Selected process
-        // </summary>
-        //
+        
         public Process Process
         {
             get
@@ -39,14 +62,23 @@ namespace MemoryToolkit
                 // Open access to new process
                 process = value;
 
-                if (process.HasExited)
-                    throw new ProcessHasExitedException(process);
+                CheckAlive();
             }
+        }
+
+        public void CheckAlive()
+        {
+            if (process == null)
+                throw new NullReferenceException("Invalid process");
+
+            if (process.HasExited)
+                throw new ProcessHasExitedException(process);
         }
 
         public void Dispose()
         {
-            
+            if(process != null)
+                process.Dispose();
         }
     }
 }

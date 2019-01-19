@@ -66,6 +66,18 @@ namespace MemoryToolkit
             }
         }
 
+        /// <summary>
+        /// Reads from main module
+        /// </summary>
+        /// <typeparam name="T">Type</typeparam>
+        /// <param name="Address">Address</param>
+        /// <param name="stringLen">(only for string) -1 to read to \0</param>
+        /// <returns></returns>
+        public T Read<T>(IntPtr Address, int stringLen = -1)
+        {
+            return MainModule.Read<T>(Address, stringLen);
+        }
+
         public void CheckAlive()
         {
             if (process == null)

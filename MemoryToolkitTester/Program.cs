@@ -13,7 +13,7 @@ namespace MemoryToolkitTester
         {
             WriteLine("MemoryToolkitTester start");
 
-            var processes = Process.GetProcessesByName("explorer");
+            var processes = Process.GetProcessesByName("speed");
             if(processes.Length == 0)
             {
                 WriteLine("Process not found");

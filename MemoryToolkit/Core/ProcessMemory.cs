@@ -80,5 +80,10 @@ namespace MemoryToolkit
             if(process != null)
                 process.Dispose();
         }
+
+        public object Invoke(IntPtr Address, object[] Arguments = null)
+        {
+            return MainModule.Invoke(Address, Arguments);
+        }
     }
 }

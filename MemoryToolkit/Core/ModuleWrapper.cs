@@ -63,6 +63,25 @@ namespace MemoryToolkit
             return null;
         }
 
+        public T Read<T>(IntPtr Address)
+        {
+            if(typeof(T) == typeof(byte))
+            {
+
+            }
+            else if (typeof(T) == typeof(int))
+            {
+
+            }
+
+            throw new NotImplementedException($"Type '{typeof(T).Name}' is not implemented in MemoryToolkit");
+        }
+        
+        public object Read(IntPtr Address, int size)
+        {
+            return null;
+        }
+
         public override string ToString()
         {
             StringBuilder blr = new StringBuilder();

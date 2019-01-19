@@ -64,5 +64,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Stuff\Exceptions.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Interop\kernel32.cs" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

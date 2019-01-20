@@ -29,7 +29,7 @@ namespace BinaryToolkit
             if (fileStream == null)
             {
                 if (OSVersion.IsROS())
-                    kernel32.ReadProcessMemory(hProcess, lpBaseAddress, lpBuffer, dwSize, out lpNumberOfBytesRead);
+                    return kernel32.ReadProcessMemory(hProcess, lpBaseAddress, lpBuffer, dwSize, out lpNumberOfBytesRead);
                 else
                     throw new NotImplementedException();
             }

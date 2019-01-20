@@ -4,7 +4,7 @@
 
 - It works on any x64 Windows OS
 - It works on Windows XP
-- It works on ReactOS
+- It works on [ReactOS](https://github.com/reactos/reactos)
 - It ~~works~~ will work on Linux, Mac, Android on any device because of .NET Core port (branch will be added later)
 
 ## Usage

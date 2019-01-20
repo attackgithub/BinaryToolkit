@@ -83,7 +83,7 @@ namespace BinaryToolkit
                 if (Parent.IsFile)
                     return IntPtr.Zero;
                 else
-                    return Process.Handle;
+                    return Parent.AccessHandle;// Process.Handle;
             }
         }
 
@@ -99,7 +99,7 @@ namespace BinaryToolkit
         }
 
         // not implemented
-        public object Invoke(IntPtr Address, object[] Arguments = null)
+        public T Invoke<T>(IntPtr Address, object[] Arguments = null)
         {
             if (Parent.IsFile)
                 throw new UncompatibleException("You can't invoke methods from File. Start this program, create instance of BinaryAccess for process and invoke there.");
@@ -107,10 +107,10 @@ namespace BinaryToolkit
             if (Arguments == null)
                 Arguments = new object[] { };
 
-            return null;
+            return default(T);
         }
         
-        public T Read<T>(IntPtr Address, bool adrRelativeToTheMainModule = true, int stringLen = -1, bool AutoAddress = true)
+        public T Read<T>(IntPtr Address, bool adrRelativeToTheMainModule = true, int stringLen = -1, bool AutoAddress = true) 
         { 
             // Type of T
             Type type = typeof(T);
@@ -122,37 +122,41 @@ namespace BinaryToolkit
             // If it's string, return ReadString method, but with new Address
             if (type == typeof(string))
                 return (T)(object)ReadString(Address, stringLen);
-
-            // If it's not stringm then just get size of returnable type
-            int dwSize = Marshal.SizeOf(typeof(T));
-            byte[] buffer = new byte[dwSize];
-            IntPtr bytesread;
             
-            // Read from memory or file
-            NativeWrapper.Read(ProcessHandleSafe, Address, out buffer, dwSize, out bytesread, Parent.FileStream);
-
-            // And convert bytes to type
-            if (type == typeof(byte))
-            {
-                // if byte, just simply return first byte
-                return (T)(object)buffer[0];
-            }
-            else if (type == typeof(Int32))
-            {
-                return (T)(object)BitConverter.ToInt32(buffer, 0);
-            }
-            else if (type == typeof(Char))
-            {
-                // Char is always one, so let's use only first byte
-                return (T)(object)Convert.ToChar(buffer[0]);
-            }
-
-            throw new NotImplementedException($"Type '{type.Name}' is not implemented in MemoryToolkit");
+            return NativeWrapper.Read<T>(ProcessHandleSafe, Address, Parent.FileStream);
         }
 
-        public void Write(IntPtr Address, object Object)
+        public bool Write<T>(IntPtr Address, T Value, bool adrRelativeToTheMainModule = true, bool AutoAddress = true)
         {
-            throw new NotImplementedException();
+            // Type of T
+            Type type = typeof(T);
+
+            if (AutoAddress)
+                if ((!adrRelativeToTheMainModule && !Parent.IsFile) || (Parent.IsFile && adrRelativeToTheMainModule))
+                    Address = Address.Decrement(BaseAddress);
+
+            // If it's string, return ReadString method, but with new Address
+            if (type == typeof(string))
+                return WriteString(Address, (string)(object)Value);
+
+            byte[] Buffer = NativeWrapper.TConvert(Value);
+            int Size = Marshal.SizeOf(typeof(T));
+
+            return NativeWrapper.Write(ProcessHandleSafe, Address, Buffer, Size, Parent.FileStream);
+        }
+
+        private bool WriteString(IntPtr Address, string Value)
+        {
+            for(int i = 0; i < Value.Length; i++)
+            {
+                Write(Address, Value[i], true, false);
+
+                Address = Address.Increment(1);
+            }
+
+            Write(Address, '\0', true, false);
+
+            return true;
         }
 
         private string ReadString(IntPtr Address, int stringLen = -1)

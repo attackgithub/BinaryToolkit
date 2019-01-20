@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>net40;netcoreapp2.1</TargetFrameworks>
 	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	<Platforms>AnyCPU;x64;x86</Platforms>
   </PropertyGroup>
 
     

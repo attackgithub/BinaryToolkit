@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using BinaryToolkit.Extensions;
+using System.Runtime.InteropServices;
 
 namespace MemoryToolkitTester
 {
@@ -25,7 +26,23 @@ namespace MemoryToolkitTester
             IntPtr adr = (IntPtr)0x8B26D4;
             WriteLine("[Read Char Test] 0x" + adr.ToString("X4"));
 
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 21; i++)
+            {
+                var result = mem.Read<Char>(adr);
+                Write(result.ToString() + ",", ConsoleColor.Green);
+                adr = adr.Increment(1);
+            }
+
+            WriteLine("");
+            adr = (IntPtr)0x8B26D4;
+            bool isWritten = mem.Write(adr, "string");
+            WriteLine($"isWr: {isWritten}");
+            WriteLine($"win32error: {Marshal.GetLastWin32Error()}");
+
+            adr = (IntPtr)0x8B26D4;
+            WriteLine("[Read Char Test] 0x" + adr.ToString("X4"));
+
+            for (int i = 0; i < 21; i++)
             {
                 var result = mem.Read<Char>(adr);
                 Write(result.ToString() + ",", ConsoleColor.Green);

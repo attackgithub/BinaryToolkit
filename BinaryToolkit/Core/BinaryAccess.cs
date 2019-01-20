@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using BinaryToolkit.Exceptions;
+using BinaryToolkit.Interop;
 
 namespace BinaryToolkit
 {
@@ -119,7 +120,7 @@ namespace BinaryToolkit
                     return new Module(null, this);
             }
         }
-        
+
         public Module[] Modules
         {
             get
@@ -133,7 +134,7 @@ namespace BinaryToolkit
 
                 List<Module> result = new List<Module>();
 
-                foreach(ProcessModule module in process.Modules)
+                foreach (ProcessModule module in process.Modules)
                 {
                     result.Add(new Module(module, this));
                 }
@@ -185,8 +186,29 @@ namespace BinaryToolkit
             }
         }
 
+        /// <summary>
+        /// Process Handle with full access
+        /// </summary>
+        public IntPtr AccessHandle = IntPtr.Zero;
+
+        /// <summary>
+        /// Process Handle by default with full access
+        /// </summary>
+        public IntPtr ProcessHandle
+        {
+            get
+            {
+                if (AccessHandle != IntPtr.Zero)
+                    return AccessHandle;
+
+                if (process != null)
+                    return (IntPtr)process.Id; // return default handle 
+
+                return IntPtr.Zero;
+            }
+        }
+
         private Process process = null;
-        
         public Process Process
         {
             get
@@ -205,6 +227,8 @@ namespace BinaryToolkit
                 process = value;
 
                 CheckAlive();
+
+                AccessHandle = kernel32.OpenProcess(kernel32.ProcessAccessFlags.All, false, process.Id);
             }
         }
 
@@ -214,7 +238,7 @@ namespace BinaryToolkit
         /// <typeparam name="T">Type</typeparam>
         /// <param name="stringLen">(only for string) -1 to read to \0</param>
         /// <returns></returns>
-        public T Read<T>(IntPtr Address, bool adrRelativeToTheMainModule = true, int stringLen = -1)
+        public T Read<T>(IntPtr Address, bool adrRelativeToTheMainModule = true, int stringLen = -1) 
         {
             return MainModule.Read<T>(Address, adrRelativeToTheMainModule, stringLen);
         }
@@ -222,10 +246,10 @@ namespace BinaryToolkit
         /// <summary>
         /// Writes to the main module
         /// </summary>
-        /// <param name="Object">Object</param>
-        public void Write(IntPtr Address, object Object)
+        /// <param name="Value">Object</param>
+        public bool Write<T>(IntPtr Address, T Value)
         {
-            MainModule.Write(Address, Object);
+            return MainModule.Write<T>(Address, Value);
         }
 
         public void CheckAlive()
@@ -252,6 +276,12 @@ namespace BinaryToolkit
         {
             if (!IsFile)
             {
+                if(AccessHandle != IntPtr.Zero)
+                {
+                    kernel32.CloseHandle(AccessHandle);
+                    AccessHandle = IntPtr.Zero;
+                }
+
                 if (process != null)
                     process.Dispose();
             }
@@ -262,9 +292,9 @@ namespace BinaryToolkit
             }
         }
 
-        public object Invoke(IntPtr Address, object[] Arguments = null)
+        public T Invoke<T>(IntPtr Address, object[] Arguments = null)
         {
-            return MainModule.Invoke(Address, Arguments);
+            return MainModule.Invoke<T>(Address, Arguments);
         }
 
         public override string ToString()

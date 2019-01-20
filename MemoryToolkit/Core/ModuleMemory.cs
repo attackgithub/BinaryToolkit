@@ -13,7 +13,10 @@ namespace MemoryToolkit
         {
             get
             {
-                return ProcessModule.BaseAddress;
+                if (!Parent.IsFile)
+                    return ProcessModule.BaseAddress;
+                else
+                    return IntPtr.Zero; // fixme
             }
         }
 
@@ -48,7 +51,7 @@ namespace MemoryToolkit
                 return ProcessModule.EntryPointAddress;
             }
         }
-
+        
         public IntPtr MainModuleAddress
         {
             get
@@ -59,11 +62,13 @@ namespace MemoryToolkit
 
         public System.Diagnostics.ProcessModule ProcessModule = null;
         public System.Diagnostics.Process Process = null;
+        public ProcessMemory Parent = null;
 
-        public Module(System.Diagnostics.ProcessModule o, System.Diagnostics.Process p)
+        public Module(System.Diagnostics.ProcessModule o, ProcessMemory parent)
         {
+            Parent = parent;
             ProcessModule = o;
-            Process = p;
+            Process = parent.Process;
         }
 
         // not implemented

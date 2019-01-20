@@ -61,7 +61,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core\BinaryToolkit.cs" />
+    <Compile Include="Core\NativeWrapper.cs" />
+    <Compile Include="Core\BinaryAccess.cs" />
     <Compile Include="Core\ModuleMemory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Stuff\Exceptions.cs" />

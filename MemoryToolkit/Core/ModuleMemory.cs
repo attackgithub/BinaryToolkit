@@ -80,42 +80,51 @@ namespace BinaryToolkit
             return null;
         }
         
-
         public T Read<T>(IntPtr Address, bool adrRelativeToTheMainModule = true, int stringLen = -1)
         { 
+            // Type of T
             Type type = typeof(T);
             
             if (!adrRelativeToTheMainModule)
                 Address = BaseAddress.Increment(Address); // add BaseAddress to the Address
 
+            // If it's string, return ReadString method, but with new Address
             if (type == typeof(string))
                 return (T)(object)ReadString(Address, stringLen);
 
+            // If it's not stringm then just get size of returnable type
             int dwSize = Marshal.SizeOf(typeof(T));
             byte[] buffer = new byte[dwSize];
             IntPtr bytesread;
+            
+            // Read from memory or file
+            NativeWrapper.Read(Process.Handle, Address, buffer, dwSize, out bytesread, Parent.IsFile);
 
-
-            Interop.kernel32.ReadProcessMemory(Process.Handle, Address, buffer, dwSize, out bytesread);
-
-            if (type == typeof(Int32))
+            // And convert bytes to type
+            if (type == typeof(byte))
+            {
+                // if byte, just simply return first byte
+                return (T)(object)buffer[0];
+            }
+            else if (type == typeof(Int32))
             {
                 return (T)(object)BitConverter.ToInt32(buffer, 0);
             }
             else if (type == typeof(Char))
             {
+                // Char is always one, so let's use only first byte
                 return (T)(object)Convert.ToChar(buffer[0]);
-                //return (T)(object)BitConverter.ToChar(buffer, 0);
-            }
-            else if (type == typeof(byte))
-            {
-                return (T)(object)buffer[0];
             }
 
             throw new NotImplementedException($"Type '{type.Name}' is not implemented in MemoryToolkit");
         }
 
-        public string ReadString(IntPtr Address, int stringLen = -1)
+        public void Write(IntPtr Address, object Object)
+        {
+            throw new NotImplementedException();
+        }
+
+        private string ReadString(IntPtr Address, int stringLen = -1)
         {
             StringBuilder result = new StringBuilder();
 

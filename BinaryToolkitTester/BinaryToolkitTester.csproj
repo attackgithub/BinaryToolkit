@@ -74,7 +74,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MemoryToolkit\BinaryToolkit.csproj">
+    <ProjectReference Include="..\BinaryToolkit\BinaryToolkit.csproj">
       <Project>{ffd413bd-d99a-4e6e-9a74-298c59898a00}</Project>
       <Name>BinaryToolkit</Name>
     </ProjectReference>

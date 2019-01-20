@@ -24,14 +24,18 @@ namespace BinaryToolkit
                                 out IntPtr lpNumberOfBytesRead,
                                 FileStream fileStream = null)
         {
+            lpBuffer = new byte[dwSize];
+
             if (fileStream == null)
-                return kernel32.ReadProcessMemory(hProcess, lpBaseAddress, out lpBuffer, dwSize, out lpNumberOfBytesRead);
+            {
+                return kernel32.ReadProcessMemory(hProcess, lpBaseAddress, lpBuffer, dwSize, out lpNumberOfBytesRead);
+            }
             else
             {
                 List<byte> buffer = new List<byte>();
 
                 long seek = fileStream.Seek(lpBaseAddress.ToInt64(), SeekOrigin.Begin);
-                
+
                 for (int i = 0; i < dwSize; i++)
                 {
                     int b = fileStream.ReadByte();

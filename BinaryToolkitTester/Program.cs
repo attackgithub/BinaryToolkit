@@ -14,7 +14,10 @@ namespace MemoryToolkitTester
         {
             WriteLine("MemoryToolkitTester start");
 
-            BinaryAccess mem = new BinaryAccess("speed.exe", (IntPtr)0x400000);
+            if (args.Length == 0)
+                args = new string[] { "speed.exe" };
+
+            BinaryAccess mem = new BinaryAccess(args[0], (IntPtr)0x400000);
             WriteLine(mem.ToString(), ConsoleColor.DarkYellow);
 
             WriteLine("[Main Module] " + mem.MainModule.ToString());

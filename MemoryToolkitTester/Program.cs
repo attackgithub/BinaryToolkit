@@ -1,10 +1,10 @@
-﻿using MemoryToolkit;
+﻿using BinaryToolkit;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using MemoryToolkit.Extensions;
+using BinaryToolkit.Extensions;
 
 namespace MemoryToolkitTester
 {
@@ -14,14 +14,7 @@ namespace MemoryToolkitTester
         {
             WriteLine("MemoryToolkitTester start");
 
-            var processes = Process.GetProcessesByName("speed");
-            if(processes.Length == 0)
-            {
-                WriteLine("Process not found");
-                return 1;
-            }
-
-            ProcessMemory mem = new ProcessMemory(processes[0]);
+            BinaryAccess mem = new BinaryAccess("speed");
             WriteLine(mem.Process.ToString());
 
             WriteLine("[Main Module] " + mem.MainModule.ToString());

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using MemoryToolkit.Extensions;
+using BinaryToolkit.Extensions;
 
-namespace MemoryToolkit
+namespace BinaryToolkit
 {
     public class Module
     {
@@ -62,9 +62,9 @@ namespace MemoryToolkit
 
         public System.Diagnostics.ProcessModule ProcessModule = null;
         public System.Diagnostics.Process Process = null;
-        public ProcessMemory Parent = null;
+        public BinaryAccess Parent = null;
 
-        public Module(System.Diagnostics.ProcessModule o, ProcessMemory parent)
+        public Module(System.Diagnostics.ProcessModule o, BinaryAccess parent)
         {
             Parent = parent;
             ProcessModule = o;

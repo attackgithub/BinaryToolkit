@@ -4,7 +4,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace MemoryToolkit.Interop
+namespace BinaryToolkit.Interop
 {
     public class kernel32
     {

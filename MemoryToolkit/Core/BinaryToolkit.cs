@@ -4,17 +4,17 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using MemoryToolkit.Exceptions;
+using BinaryToolkit.Exceptions;
 
-namespace MemoryToolkit
+namespace BinaryToolkit
 {
-    public class ProcessMemory : IDisposable
+    public class BinaryAccess : IDisposable
     {
         /// <summary>
         /// BinaryToolkit instance for Process
         /// </summary>
         /// <param name="processId">Process ID</param>
-        public ProcessMemory(int processId)
+        public BinaryAccess(int processId)
         {
             isFile = false;
             Process = Process.GetProcessById(processId);
@@ -24,7 +24,7 @@ namespace MemoryToolkit
         /// BinaryToolkit instance for Process
         /// </summary>
         /// <param name="processInstance">Process instance/param>
-        public ProcessMemory(Process processInstance)
+        public BinaryAccess(Process processInstance)
         {
             isFile = false;
             Process = processInstance;
@@ -34,7 +34,7 @@ namespace MemoryToolkit
         /// BinaryToolkit instance for File.
         /// </summary>
         /// <param name="file">FileInfo instance for file</param>
-        public ProcessMemory(FileInfo file)
+        public BinaryAccess(FileInfo file)
         {
             isFile = true;
             File = file;
@@ -45,7 +45,7 @@ namespace MemoryToolkit
         /// Looks for Process firstly.
         /// </summary>
         /// <param name="FileOrProcessName">File or process name</param>
-        public ProcessMemory(string FileOrProcessName)
+        public BinaryAccess(string FileOrProcessName)
         {
             var processes = Process.GetProcessesByName(FileOrProcessName);
             if(processes.Length >= 1)

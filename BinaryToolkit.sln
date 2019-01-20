@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28010.2046
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MemoryToolkit", "MemoryToolkit\MemoryToolkit.csproj", "{FFD413BD-D99A-4E6E-9A74-298C59898A00}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BinaryToolkit", "MemoryToolkit\BinaryToolkit.csproj", "{FFD413BD-D99A-4E6E-9A74-298C59898A00}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MemoryToolkitTester", "MemoryToolkitTester\MemoryToolkitTester.csproj", "{EE4C07CE-733E-4B17-89DF-55433F122993}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BinaryToolkitTester", "MemoryToolkitTester\BinaryToolkitTester.csproj", "{EE4C07CE-733E-4B17-89DF-55433F122993}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

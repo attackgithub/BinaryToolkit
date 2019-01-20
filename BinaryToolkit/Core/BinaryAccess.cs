@@ -124,8 +124,10 @@ namespace BinaryToolkit
         {
             get
             {
+                //if (IsFile)
+                //    throw new UncompatibleException("You can't get modules from File. Start this program, create instance of BinaryAccess for process and try it there. Or use MainModule instead.");
                 if (IsFile)
-                    throw new UncompatibleException("You can't get modules from File. Start this program, create instance of BinaryAccess for process and try it there. Or use MainModule instead.");
+                    return new Module[] { };
 
                 CheckAlive();
 
@@ -263,6 +265,19 @@ namespace BinaryToolkit
         public object Invoke(IntPtr Address, object[] Arguments = null)
         {
             return MainModule.Invoke(Address, Arguments);
+        }
+
+        public override string ToString()
+        {
+            StringBuilder b = new StringBuilder();
+
+            b.Append("[");
+            b.Append($"(IsFile:{IsFile})");
+            b.Append($",(MainModule.Name:{MainModule.Name})");
+            b.Append($",(MainModule.BaseAddress:0x{MainModule.BaseAddress.ToString("X4")})");
+            b.Append("]");
+
+            return b.ToString();
         }
     }
 }

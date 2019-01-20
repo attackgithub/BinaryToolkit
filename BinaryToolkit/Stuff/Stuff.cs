@@ -9,8 +9,8 @@ namespace BinaryToolkit
     {
         public enum OS
         {
-            Windows,
-            NotWindows
+            ReactOS,
+            NotReactOS
         }
 
         public static OS GetOS()

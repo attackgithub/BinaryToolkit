@@ -24,7 +24,7 @@ text = mem.MainModule.Read<string((IntPtr)0x8B26D4);
 // You have an access to modules memory (only for processes!)
 foreach (var module in mem.Modules)
 {
-    WriteLine("[Module] " + module.ToString());
+	WriteLine("[Module] " + module.ToString());
 	string result = module.Read<string((IntPtr)0x8B26D4);
 }
 

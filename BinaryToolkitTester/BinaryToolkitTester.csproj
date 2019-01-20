@@ -74,12 +74,6 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BinaryToolkit\BinaryToolkit.csproj">
-      <Project>{ffd413bd-d99a-4e6e-9a74-298c59898a00}</Project>
-      <Name>BinaryToolkit</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Program.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -87,6 +81,12 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BinaryToolkit\BinaryToolkit.csproj">
+      <Project>{ffd413bd-d99a-4e6e-9a74-298c59898a00}</Project>
+      <Name>BinaryToolkit</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

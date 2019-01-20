@@ -5,7 +5,7 @@ using System.Text;
 
 namespace BinaryToolkit.Interop
 {
-    class linux
+    public class Linux
     {
     }
 }

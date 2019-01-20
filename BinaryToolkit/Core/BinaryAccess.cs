@@ -11,7 +11,7 @@ namespace BinaryToolkit
     public class BinaryAccess : IDisposable
     {
         /// <summary>
-        /// BinaryToolkit instance for Process
+        /// BinaryAccess instance for the Process
         /// </summary>
         /// <param name="processId">Process ID</param>
         public BinaryAccess(int processId)
@@ -19,9 +19,9 @@ namespace BinaryToolkit
             isFile = false;
             Process = Process.GetProcessById(processId);
         }
-        
+
         /// <summary>
-        /// BinaryToolkit instance for Process
+        /// BinaryAccess instance for the Process
         /// </summary>
         /// <param name="processInstance">Process instance/param>
         public BinaryAccess(Process processInstance)
@@ -31,7 +31,19 @@ namespace BinaryToolkit
         }
 
         /// <summary>
-        /// BinaryToolkit instance for File.
+        /// BinaryAccess instance for the File.
+        /// </summary>
+        /// <param name="file">FileInfo instance for file</param>
+        /// <param name="BaseAddress">BaseAddress of the main module. You can leave IntPtr.Zero.</param>
+        public BinaryAccess(FileInfo file, IntPtr BaseAddress)
+        {
+            isFile = true;
+            File = file;
+            FileBaseAddress = BaseAddress;
+        }
+
+        /// <summary>
+        /// BinaryAccess instance for the File.
         /// </summary>
         /// <param name="file">FileInfo instance for file</param>
         public BinaryAccess(FileInfo file)
@@ -41,14 +53,14 @@ namespace BinaryToolkit
         }
 
         /// <summary>
-        /// BinaryToolkit instance for file or process.
+        /// BinaryAccess instance for file or process.
         /// Looks for Process firstly.
         /// </summary>
         /// <param name="FileOrProcessName">File or process name</param>
         public BinaryAccess(string FileOrProcessName)
         {
             var processes = Process.GetProcessesByName(FileOrProcessName);
-            if(processes.Length >= 1)
+            if (processes.Length >= 1)
             {
                 isFile = false;
                 Process = processes[0];
@@ -56,7 +68,7 @@ namespace BinaryToolkit
             }
 
             var file = new FileInfo(FileOrProcessName);
-            if(file.Exists)
+            if (file.Exists)
             {
                 isFile = true;
                 File = file;
@@ -65,14 +77,46 @@ namespace BinaryToolkit
 
             throw new FileNotFoundException($"File or process {FileOrProcessName} is not found");
         }
-        
+
+        /// <summary>
+        /// BinaryAccess instance for file or process.
+        /// Looks for Process firstly.
+        /// </summary>
+        /// <param name="FileOrProcessName">File or process name</param>
+        /// <param name="BaseAddress">(only for files) BaseAddress of the main module. You can leave IntPtr.Zero.</param>
+        public BinaryAccess(string FileOrProcessName, IntPtr BaseAddress)
+        {
+            var processes = Process.GetProcessesByName(FileOrProcessName);
+            if (processes.Length >= 1)
+            {
+                isFile = false;
+                Process = processes[0];
+                return;
+            }
+
+            var file = new FileInfo(FileOrProcessName);
+            if (file.Exists)
+            {
+                isFile = true;
+                File = file;
+                FileBaseAddress = BaseAddress;
+                return;
+            }
+
+            throw new FileNotFoundException($"File or process {FileOrProcessName} is not found");
+        }
+
+
         public Module MainModule
         {
             get
             {
                 CheckAlive();
 
-                return new Module(process.MainModule, this);
+                if (!IsFile)
+                    return new Module(process.MainModule, this);
+                else
+                    return new Module(null, this);
             }
         }
         
@@ -81,7 +125,7 @@ namespace BinaryToolkit
             get
             {
                 if (IsFile)
-                    throw new Exception("BinaryToolkit can't get modules from file. Use MainModule as full file instead.");
+                    throw new UncompatibleException("You can't get modules from File. Start this program, create instance of BinaryAccess for process and try it there. Or use MainModule instead.");
 
                 CheckAlive();
 
@@ -104,6 +148,16 @@ namespace BinaryToolkit
             }
         }
 
+        public IntPtr FileBaseAddress = IntPtr.Zero;
+        private FileStream fileStream = null;
+        public FileStream FileStream
+        {
+            get
+            {
+                return fileStream;
+            }
+        }
+
         private FileInfo file = null;
         public FileInfo File
         {
@@ -113,11 +167,17 @@ namespace BinaryToolkit
             }
             set
             {
+                if (!IsFile)
+                    throw new Exception("This BinaryAccess instance is for Processes only. Create another one.");
+
                 // Close access to previous file
                 Dispose();
 
                 // Set another file
                 file = value;
+
+                // Open access to the file
+                fileStream = file.Open(FileMode.Open, FileAccess.ReadWrite);
 
                 CheckAlive();
             }
@@ -134,7 +194,7 @@ namespace BinaryToolkit
             set
             {
                 if (IsFile)
-                    throw new Exception("This BinaryToolkit instance is only for files. Please, create another one for process.");
+                    throw new Exception("This BinaryAccess instance is only for files. Please, create another one for process.");
 
                 // Close access to previous process
                 Dispose();
@@ -147,15 +207,23 @@ namespace BinaryToolkit
         }
 
         /// <summary>
-        /// Reads from main module
+        /// Reads from the main module
         /// </summary>
         /// <typeparam name="T">Type</typeparam>
-        /// <param name="Address">Address</param>
         /// <param name="stringLen">(only for string) -1 to read to \0</param>
         /// <returns></returns>
         public T Read<T>(IntPtr Address, bool adrRelativeToTheMainModule = true, int stringLen = -1)
         {
             return MainModule.Read<T>(Address, adrRelativeToTheMainModule, stringLen);
+        }
+
+        /// <summary>
+        /// Writes to the main module
+        /// </summary>
+        /// <param name="Object">Object</param>
+        public void Write(IntPtr Address, object Object)
+        {
+            MainModule.Write(Address, Object);
         }
 
         public void CheckAlive()
@@ -180,8 +248,16 @@ namespace BinaryToolkit
 
         public void Dispose()
         {
-            if(process != null)
-                process.Dispose();
+            if (!IsFile)
+            {
+                if (process != null)
+                    process.Dispose();
+            }
+            else
+            {
+                if (fileStream != null)
+                    fileStream.Dispose();
+            }
         }
 
         public object Invoke(IntPtr Address, object[] Arguments = null)

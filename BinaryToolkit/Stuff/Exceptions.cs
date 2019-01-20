@@ -22,4 +22,12 @@ namespace BinaryToolkit.Exceptions
                 return $"Process {process.ProcessName} (pid: {process.Id}) has exited";
         }
     }
+
+    public class UncompatibleException : Exception
+    {
+        public UncompatibleException(string message) : base(message)
+        {
+
+        }
+    }
 }

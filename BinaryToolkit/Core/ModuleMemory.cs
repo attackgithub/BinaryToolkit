@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using BinaryToolkit.Extensions;
+using BinaryToolkit.Exceptions;
 
 namespace BinaryToolkit
 {
@@ -16,7 +17,7 @@ namespace BinaryToolkit
                 if (!Parent.IsFile)
                     return ProcessModule.BaseAddress;
                 else
-                    return IntPtr.Zero; // fixme
+                    return Parent.FileBaseAddress;
             }
         }
 
@@ -24,7 +25,10 @@ namespace BinaryToolkit
         {
             get
             {
-                return ProcessModule.ModuleName;
+                if (!Parent.IsFile)
+                    return ProcessModule.ModuleName;
+                else
+                    return Parent.File.Name;
             }
         }
 
@@ -32,15 +36,21 @@ namespace BinaryToolkit
         {
             get
             {
-                return ProcessModule.FileName;
+                if (!Parent.IsFile)
+                    return ProcessModule.FileName;
+                else
+                    return Parent.File.FullName;
             }
         }
 
-        public int ModuleMemorySize
+        public long ModuleMemorySize
         {
             get
             {
-                return ProcessModule.ModuleMemorySize;
+                if (!Parent.IsFile)
+                    return ProcessModule.ModuleMemorySize;
+                else
+                    return Parent.File.Length;
             }
         }
 
@@ -48,15 +58,32 @@ namespace BinaryToolkit
         {
             get
             {
-                return ProcessModule.EntryPointAddress;
+                if (!Parent.IsFile)
+                    return ProcessModule.EntryPointAddress;
+                else
+                    return IntPtr.Zero; // fix me
             }
         }
-        
+
         public IntPtr MainModuleAddress
         {
             get
             {
-                return Process.MainModule.BaseAddress;
+                return Parent.MainModule.BaseAddress;
+            }
+        }
+
+        /// <summary>
+        /// Return IntPtr.Zero if it's a file
+        /// </summary>
+        public IntPtr ProcessHandleSafe
+        {
+            get
+            {
+                if (Parent.IsFile)
+                    return IntPtr.Zero;
+                else
+                    return Process.Handle;
             }
         }
 
@@ -74,19 +101,23 @@ namespace BinaryToolkit
         // not implemented
         public object Invoke(IntPtr Address, object[] Arguments = null)
         {
+            if (Parent.IsFile)
+                throw new UncompatibleException("You can't invoke methods from File. Start this program, create instance of BinaryAccess for process and invoke there.");
+
             if (Arguments == null)
                 Arguments = new object[] { };
 
             return null;
         }
         
-        public T Read<T>(IntPtr Address, bool adrRelativeToTheMainModule = true, int stringLen = -1)
+        public T Read<T>(IntPtr Address, bool adrRelativeToTheMainModule = true, int stringLen = -1, bool AutoAddress = true)
         { 
             // Type of T
             Type type = typeof(T);
             
-            if (!adrRelativeToTheMainModule)
-                Address = BaseAddress.Increment(Address); // add BaseAddress to the Address
+            if(AutoAddress)
+                if ((!adrRelativeToTheMainModule && !Parent.IsFile) || (Parent.IsFile && adrRelativeToTheMainModule))
+                    Address = Address.Decrement(BaseAddress);
 
             // If it's string, return ReadString method, but with new Address
             if (type == typeof(string))
@@ -98,7 +129,7 @@ namespace BinaryToolkit
             IntPtr bytesread;
             
             // Read from memory or file
-            NativeWrapper.Read(Process.Handle, Address, buffer, dwSize, out bytesread, Parent.IsFile);
+            NativeWrapper.Read(ProcessHandleSafe, Address, out buffer, dwSize, out bytesread, Parent.FileStream);
 
             // And convert bytes to type
             if (type == typeof(byte))
@@ -131,7 +162,7 @@ namespace BinaryToolkit
             int i = 0;
             while (i != stringLen)
             {
-                byte buffer = Read<byte>(Address, true);
+                byte buffer = Read<byte>(Address, true, -1, false);
 
                 if (buffer == 0)
                     break;

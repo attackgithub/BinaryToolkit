@@ -14,19 +14,15 @@ namespace MemoryToolkitTester
         {
             WriteLine("MemoryToolkitTester start");
 
-            BinaryAccess mem = new BinaryAccess("speed");
-            WriteLine(mem.Process.ToString());
+            BinaryAccess mem = new BinaryAccess("speed.exe", (IntPtr)0x400000);
+            WriteLine(mem.ToString(), ConsoleColor.DarkYellow);
 
             WriteLine("[Main Module] " + mem.MainModule.ToString());
-            foreach (var module in mem.Modules)
-            {
-                WriteLine("[Module] " + module.ToString());
-            }
 
             IntPtr adr = (IntPtr)0x8B26D4;
-            WriteLine("[ReadChar Test] Started at: 0x" + adr.ToString("X4"));
+            WriteLine("[Read Char Test] 0x" + adr.ToString("X4"));
 
-            for (int i = 0; i < 20; i++)
+            for (int i = 0; i < 100; i++)
             {
                 var result = mem.Read<Char>(adr);
                 Write(result.ToString() + ",", ConsoleColor.Green);
@@ -34,23 +30,14 @@ namespace MemoryToolkitTester
             }
 
             WriteLine("");
-            WriteLine("[ReadChar Test] Finished at: 0x" + adr.ToString("X4"));
-            WriteLine("");
-
             adr = (IntPtr)0x8B26D4;
-            WriteLine("[Read String Test] Started at: 0x" + adr.ToString("X4"));
-
-           
+            WriteLine("[Read String Test] 0x" + adr.ToString("X4"));
+            
             var resultString = mem.Read<string>(adr);
             Write(resultString.ToString(), ConsoleColor.Green);
-
-            WriteLine("");
-            WriteLine("[Read String Test] Finished at: 0x" + adr.ToString("X4"));
             WriteLine("");
 
             mem.Dispose();
-            WriteLine("[ProcessMemory] Disposed, ready to exit");
-            WriteLine("");
 
             if (!Debugger.IsAttached)
             {

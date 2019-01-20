@@ -12,7 +12,7 @@ namespace BinaryToolkit.Interop
         public static extern bool ReadProcessMemory(
     IntPtr hProcess,
     IntPtr lpBaseAddress,
-    [Out] byte[] lpBuffer,
+    out byte[] lpBuffer,
     int dwSize,
     out IntPtr lpNumberOfBytesRead);
         [DllImport("kernel32.dll", SetLastError = true)]

@@ -13,6 +13,14 @@ namespace BinaryToolkit
             NotReactOS
         }
 
+        public static bool IsROS()
+        {
+            if (GetOS() == OS.ReactOS)
+                return true;
+            else
+                return false;
+        }
+
         public static OS GetOS()
         {
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
